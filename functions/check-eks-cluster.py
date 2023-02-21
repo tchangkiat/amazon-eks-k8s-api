@@ -50,13 +50,13 @@ def lambda_handler(event, context):
             'users': [{'name': 'user1', "user" : {'token': get_bearer_token(clusterName)}}]
         }
 
-        # config.load_kube_config_from_dict(config_dict=kubeconfig)
-        # print(kubeconfig)
-        # v1 = client.CoreV1Api()
-        # ret = v1.list_pod_for_all_namespaces(watch=False)
-        # print(len(ret.items))
+        config.load_kube_config_from_dict(config_dict=kubeconfig)
+        v1 = client.CoreV1Api()
+        system_pods = []
+        for p in v1.list_pod_for_all_namespaces(watch=False).items:
+            system_pods.append({ 'name': p.metadata.name, 'image': p.spec.containers[0].image })
 
-        response.append({ 'cluster': cluster_response, 'nodegroups': nodegroup_response })
+        response.append({ 'cluster': cluster_response, 'nodegroups': nodegroup_response, 'systemPods': system_pods })
     
     return {
         'statusCode': 200,

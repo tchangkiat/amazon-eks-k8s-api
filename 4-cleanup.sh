@@ -1,6 +1,6 @@
 #!/bin/bash
-if ! hash aws 2>/dev/null; then
-    echo "This script requires the AWS cli installed"
+if ! hash aws 2>/dev/null || ! hash kubectl 2>/dev/null || ! hash eksctl 2>/dev/null; then
+    echo "This script requires the AWS cli, kubectl, and eksctl installed"
     exit 2
 fi
 
