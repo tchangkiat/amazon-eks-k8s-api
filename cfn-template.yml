@@ -39,5 +39,5 @@ Resources:
       CodeUri: build/.
       Role: !GetAtt "LambdaCheckEksClusterExecutionRole.Arn"
       ReservedConcurrentExecutions: 3
-      Timeout: 30
+      Timeout: 10
       MemorySize: 256
