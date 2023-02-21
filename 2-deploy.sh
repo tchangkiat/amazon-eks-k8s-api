@@ -5,7 +5,7 @@ if ! hash aws 2>/dev/null || ! hash pip3 2>/dev/null; then
 fi
 
 set -eo pipefail
-BUCKET_NAME=$(cat bucket-name.txt)
+BUCKET_NAME=check-eks-cluster-assets
 rm -rf build ; mkdir build ; cd build
 cp -r ../functions/* .
 pip3 install --target . -r requirements.txt
