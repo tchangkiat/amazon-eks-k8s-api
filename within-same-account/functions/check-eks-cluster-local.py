@@ -12,26 +12,12 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 STS_TOKEN_EXPIRES_IN = 60
-TEAM_MEMBER_ACCOUNTS = ["409989946510"]
-TEAM_ROLE = ["arn:aws:iam::409989946510:role/gameday-quest-TeamRole"]
-
 session = boto3.session.Session()
 sts = session.client('sts')
 service_id = sts.meta.service_model.service_id
 
 def lambda_handler(event, context):
-    # Assume role in Team account
-    sts_connection = boto3.client('sts')
-    team_acct = sts_connection.assume_role(
-        RoleArn=TEAM_ROLE[0],
-        RoleSessionName="assume_team_role"
-    )
-
-    eks = boto3.client('eks',
-        aws_access_key_id = team_acct['Credentials']['AccessKeyId'],
-        aws_secret_access_key = team_acct['Credentials']['SecretAccessKey'],
-        aws_session_token = team_acct['Credentials']['SessionToken']
-    )
+    eks = boto3.client('eks')
     
     response = []
     
@@ -40,10 +26,9 @@ def lambda_handler(event, context):
             name=clusterName
         )['cluster']
         cluster_response = { 'name': cluster['name'], 'status': cluster['status'], 'version': cluster['version'] }
-
+        
         nodegroup_response = []
-        nodegroups = eks.list_nodegroups(clusterName=clusterName)['nodegroups']
-        for nodegroupName in nodegroups:
+        for nodegroupName in eks.list_nodegroups(clusterName=clusterName)['nodegroups']:
             ng = eks.describe_nodegroup(
                 clusterName=clusterName,
                 nodegroupName=nodegroupName

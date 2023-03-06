@@ -9,4 +9,5 @@
 ```bash
 sh 1-setup.sh
 sh 2-deploy.sh
+sh 3-setup-aws-auth.sh
 ```

@@ -3,7 +3,7 @@ Transform: "AWS::Serverless-2016-10-31"
 Description: An AWS Lambda application that calls the EKS Kubernetes API.
 
 Resources:
-  LambdaExecutionRole:
+  LambdaCheckEksClusterExecutionRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -25,9 +25,10 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - sts:AssumeRole
-                Resource: "arn:aws:iam::409989946510:role/*"
-      RoleName: "check-eks-cluster-LambdaExecutionRole"
+                  - eks:List*
+                  - eks:Describe*
+                Resource: "*"
+      RoleName: "LambdaCheckEksClusterExecutionRole"
 
   CheckEksClusterFunction:
     Type: AWS::Serverless::Function
@@ -36,12 +37,12 @@ Resources:
       Handler: check-eks-cluster.lambda_handler
       Runtime: python3.9
       CodeUri: build/.
-      Role: !GetAtt "LambdaExecutionRole.Arn"
-      ReservedConcurrentExecutions: 1
+      Role: !GetAtt "LambdaCheckEksClusterExecutionRole.Arn"
+      ReservedConcurrentExecutions: 3
       Timeout: 10
       MemorySize: 256
 
 Outputs:
   Role:
     Description: Lambda Function Execution Role
-    Value: !GetAtt "LambdaExecutionRole.Arn"
+    Value: !GetAtt "LambdaCheckEksClusterExecutionRole.Arn"
